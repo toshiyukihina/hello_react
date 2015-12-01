@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   root to: 'dashboard#index'
   
   namespace :api do
-    resources :comments, only: :index
+    resources :comments, only: [:index, :create]
   end
 
   get 'dashboard/index'
