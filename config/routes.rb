@@ -1,4 +1,10 @@
 Rails.application.routes.draw do
+  root to: 'dashboard#index'
+  
+  namespace :api do
+    resources :comments, only: :index
+  end
+
   get 'dashboard/index'
 
   # The priority is based upon order of creation: first created -> highest priority.

@@ -3,10 +3,27 @@ $ ->
   converter = new Showdown.converter()
   
   CommentBox = React.createClass
+  
+    loadCommentsFromServer: ->
+      $.ajax
+        url: @props.url
+        dataType: 'json'
+      .done (data) =>
+        @setState(data: data)
+      .fail (xhr, status, err) =>
+        console.error "url=#{@props.url}, status=#{status}:#{err.toString()}"
+
+    getInitialState: ->
+      data: []
+
+    componentDidMount: ->
+      @loadCommentsFromServer()
+      setInterval @loadCommentsFromServer, @props.pollInterval
+      
     render: ->
       `<div className="CommentBox">
         <h1>Comment</h1>
-        <CommentList data={this.props.data} />
+        <CommentList data={this.state.data} />
         <CommentForm />
        </div>`
 
@@ -30,12 +47,7 @@ $ ->
         <span dangerouslySetInnerHTML={{__html: rawMarkup}}></span>
       </div>`
         
-  data = [
-    {author: 'Pete Hunt', text: 'This is one comment.'}
-    {author: 'Jorden Walke', text: 'This is *author* comment.'}
-  ]
-
   ReactDOM.render(
-    `<CommentBox data={data} />`,
+    `<CommentBox url="/api/comments" pollInterval={2000} />`,
     $('#content')[0]
   )
